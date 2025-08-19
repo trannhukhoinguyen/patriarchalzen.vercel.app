@@ -34,18 +34,20 @@ const defaultCharacterDetails = {
 };
 
 const Message = ({
-                   character = "Master",
-                   direction = "left",
-                   nameProp,
-                   imageURLProp,
-                   actionProp,
-                   children,
-                 }: MessageProps) => {
+  character = "Master",
+  direction = "left",
+  nameProp,
+  imageURLProp,
+  actionProp,
+  children,
+}: MessageProps) => {
   const defaults = defaultCharacterDetails[character];
 
   const name = nameProp ?? defaults.name;
   const imageURL = imageURLProp ?? defaults.imageURL;
   const action = actionProp ?? defaults.action;
+
+  const isStringChild = typeof children === "string";
 
   return (
     <div
@@ -53,7 +55,7 @@ const Message = ({
       className="mt-4 mb-4 flex w-full gap-2 data-[direction=right]:flex-row-reverse"
     >
       <img
-        className="not-prose size-12 flex-shrink-0 rounded-full bg-slate-300 object-cover"
+        className="not-prose size-12 inline-block flex-shrink-0 rounded-full bg-slate-300 object-cover"
         src={imageURL}
         alt={`${name} profile-pic`}
         height={50}
@@ -63,23 +65,25 @@ const Message = ({
       <div className="overflow-hidden">
         <p
           data-direction={direction}
-          className="not-prose m-0 text-sm text-gray-500 data-[direction=right]:text-right"
+          className="not-prose m-0 text-sm font-normal text-gray-500 leading-snug data-[direction=right]:text-right"
         >
           {name} {action && ` ${action}`}
         </p>
-        {
-          typeof children === 'string' && children.includes('🌳')
-            ? (children as string).split('🌳')?.map((item, index) => {
-                return (
-                  <div className="w-full max-w-2xl rounded-md bg-primary/20 p-4 [&>*]:!mt-0">
-                    🌳 {item}
-                  </div>
-                )
-              })
-            : <div className="w-full max-w-2xl rounded-md bg-primary/20 p-4 [&>*]:!mt-0">
+
+        {isStringChild && (children as string).includes("🌳")
+          ? (children as string).split("🌳").map((item, index) => (
+              <div
+                key={index}
+                className="w-full max-w-2xl rounded-md bg-primary/20 p-4 font-normal leading-relaxed [&>*]:!mt-0 [&_p]:font-normal [&_p]:leading-relaxed"
+              >
+                🌳 {item}
+              </div>
+            ))
+          : (
+            <div className="w-full max-w-2xl rounded-md bg-primary/20 p-4 font-normal leading-relaxed [&>*]:!mt-0 [&_p]:font-normal [&_p]:leading-relaxed">
               {children}
             </div>
-        }
+          )}
       </div>
     </div>
   );
